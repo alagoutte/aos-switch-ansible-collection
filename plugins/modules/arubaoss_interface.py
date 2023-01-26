@@ -15,6 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'status': ['preview'],
@@ -99,10 +102,10 @@ EXAMPLES = '''
 
 '''
 
-from ansible.module_utils.basic import AnsibleModule # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec # NOQA
-from ansible.module_utils._text import to_text # NOQA
+from ansible.module_utils.basic import AnsibleModule  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec  # NOQA
+from ansible.module_utils._text import to_text  # NOQA
 
 
 def config_port(module):
@@ -133,7 +136,7 @@ def qos(module):
     # check qos policy is present
     qos_check = '/qos/policies/' + params['qos_policy'] + qptqos
     if not get_config(module, qos_check):
-        return {'msg': 'Configure QoS policy first. {} does not exist'
+        return {'msg': 'Configure QoS policy first. {1} does not exist'
                 .format(params['qos_policy']), 'changed': False}
 
     if params['state'] == 'create':
@@ -150,10 +153,10 @@ def qos(module):
                     return ret
 
         data = {
-                'port_id': params['interface'],
-                'policy_id': policy_id,
-                'direction': params['qos_direction']
-                }
+            'port_id': params['interface'],
+            'policy_id': policy_id,
+            'direction': params['qos_direction']
+        }
         result = run_commands(module, url, data, 'POST')
 
     else:
@@ -183,7 +186,7 @@ def acl(module):
 
     check_acl = '/acls/' + params['acl_id'] + "~" + acl_type
     if not get_config(module, check_acl):
-        return {'msg': 'Configure ACL first. {} does not exist'
+        return {'msg': 'Configure ACL first. {1} does not exist'
                 .format(params['acl_id']), 'changed': False}
 
     delete_url = url + '/' + params['interface'] + '-' + \
@@ -247,7 +250,7 @@ def run_module():
     port_url = '/ports/' + str(module.params['interface'])
     check_port = get_config(module, port_url)
     if not check_port:
-        result = {'msg': 'Port {} not present on device {}'
+        result = {'msg': 'Port {1} not present on device {2}'
                   .format(module.params['interface'], port_url),
                   'changed': False}
     else:

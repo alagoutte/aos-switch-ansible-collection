@@ -15,6 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'status': ['preview'],
@@ -150,10 +153,10 @@ EXAMPLES = '''
 
 '''
 
-from ansible.module_utils.basic import AnsibleModule # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec # NOQA
-from ansible.module_utils._text import to_text # NOQA
+from ansible.module_utils.basic import AnsibleModule  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec  # NOQA
+from ansible.module_utils._text import to_text  # NOQA
 
 
 def route(module):
@@ -166,17 +169,18 @@ def route(module):
     if route_type == 'IRM_VLAN':
         for key in ['destination_vlan', 'vlan_name']:
             if key not in params:
-                return {'msg': '{} is required for {}'.format(key, route_type),
+                return {'msg': '{1} is required for {2}'.format(key, route_type),
                         'changed': False}
 
-    data = {'ip_route_mode': params['ip_route_mode'],
-            'metric': params['metric'],
-            'distance': params['distance']
-            }
+    data = {
+        'ip_route_mode': params['ip_route_mode'],
+        'metric': params['metric'],
+        'distance': params['distance']
+    }
 
     if route_type == 'IRM_GATEWAY':
         if 'gateway' not in params:
-            return {'msg': 'gateway is required for {}'.format(route_type),
+            return {'msg': 'gateway is required for {1}'.format(route_type),
                     'changed': False}
         else:
             data['gateway'] = {'version': params['ip_version'],
@@ -196,8 +200,8 @@ def route(module):
 
     if route_type == 'IRM_GATEWAY':
         check_url = url + "/" + params['destination'] + "-" + \
-                    params['mask'] + "-" + params['ip_route_mode'] + "-" + \
-                    params['gateway']
+            params['mask'] + "-" + params['ip_route_mode'] + "-" + \
+            params['gateway']
     else:
         check_url = url + "/" + params['destination'] + "-" + \
             params['mask'] + "-" + params['ip_route_mode']
@@ -206,7 +210,7 @@ def route(module):
         vlan_url = '/vlans/' + str(params['destination_vlan'])
         check_vlan = get_config(module, vlan_url)
         if not check_vlan:
-            return {'msg': 'Vlan {} not configured'
+            return {'msg': 'Vlan {1} not configured'
                     .format(params['destination_vlan']), 'changed': False}
 
         data['id'] = params['destination'] + "-" + params['mask'] + "-" + \

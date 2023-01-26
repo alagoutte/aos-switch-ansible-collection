@@ -15,6 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'status': ['preview'],
@@ -33,11 +36,11 @@ version_added: "2.6"
 description:
     - "This implement rest api's which can be used to backup switch
        configuration from server. Module takes 5 secs to execute each
-       task. Defualt module action is to restore the configuration.
+       task. Default module action is to restore the configuration.
        Use config_type for configuration backup"
 
 options:
-    filne_name:
+    file_name:
         description:
             - configuration file name
         required: true
@@ -80,7 +83,7 @@ options:
         description:
             - Wait if there is already an ongoing configuration change
               on device.
-        defualt: True
+        default: True
         required: false
     state:
         description:
@@ -112,11 +115,11 @@ EXAMPLES = '''
 
 '''
 
-from ansible.module_utils.basic import AnsibleModule # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec # NOQA
-from ansible.module_utils._text import to_text # NOQA
-from time import sleep # NOQA
+from ansible.module_utils.basic import AnsibleModule  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec  # NOQA
+from ansible.module_utils._text import to_text  # NOQA
+from time import sleep  # NOQA
 
 
 def config_backup(module):
@@ -125,9 +128,9 @@ def config_backup(module):
     url = '/system/config/cfg_backup_files'
 
     data = {
-            'file_name': params['file_name'],
-            'config_type': params['config_type']
-            }
+        'file_name': params['file_name'],
+        'config_type': params['config_type']
+    }
 
     if params['state'] == 'create':
         check_config = get_config(module, url)
@@ -154,9 +157,9 @@ def config_restore(module):
 
     server_type = params['server_type']
     data = {
-            'file_name': params['file_name'],
-            'server_type': server_type,
-            }
+        'file_name': params['file_name'],
+        'server_type': server_type,
+    }
 
     if server_type == 'ST_TFTP' or server_type == 'ST_SFTP':
         if not params['server_name'] and not params['server_ip']:
@@ -169,9 +172,9 @@ def config_restore(module):
                 'tftp_server_address': {
                     'server_address': {
                         'host_name': params['server_name']
-                        }
                     }
-                })
+                }
+            })
         if params['server_ip']:
             data.update({
                 'tftp_server_address': {
@@ -179,10 +182,10 @@ def config_restore(module):
                         'ip_address': {
                             'octets': params['server_ip'],
                             'version': 'IAV_IP_V4'
-                            }
                         }
                     }
-                })
+                }
+            })
 
     if server_type == 'ST_SFTP':
         if params['server_name']:
@@ -190,9 +193,9 @@ def config_restore(module):
                 'sftp_server_address': {
                     'server_address': {
                         'host_name': params['server_name']
-                        }
                     }
-                })
+                }
+            })
         if params['server_ip']:
             data.update({
                 'sftp_server_address': {
@@ -200,10 +203,10 @@ def config_restore(module):
                         'ip_address': {
                             'octets': params['server_ip'],
                             'version': 'IAV_IP_V4'
-                            }
                         }
                     }
-                })
+                }
+            })
 
         data['sftp_server_address']['user_name'] = params['user_name']
         data['sftp_server_address']['password'] = params['server_passwd']
@@ -215,7 +218,7 @@ def config_restore(module):
         data['sftp_server_address']['port_number'] = params['sftp_port']
 
     # Wait 40 secs for configuration to be applied
-    for _ in range(20):
+    for r in range(20):
         get_status = get_config(module, url_status)
         if get_status:
             get_status = module.from_json(to_text(get_status))
@@ -227,7 +230,7 @@ def config_restore(module):
                     module.log(status['status'])
                     continue
                 else:
-                    return {'msg': 'Config restore is already running: {}'
+                    return {'msg': 'Config restore is already running: {1}'
                             .format(status), 'changed': False}
         break
 

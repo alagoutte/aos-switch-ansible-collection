@@ -15,6 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'status': ['preview'],
@@ -25,12 +28,12 @@ DOCUMENTATION = '''
 ---
 module: arubaoss_interfaces
 
-short_description: implements rest api for port configuration
+short_description: implements rest api for traffic class configuration
 
 version_added: "2.4"
 
 description:
-    - "This implements rest apiis whcih can be used to configure ports"
+    - "This implements rest apiis whcih can be used to configure trafic class"
 
 options:
     class_name:
@@ -174,10 +177,10 @@ EXAMPLES = '''
 
 '''
 
-from ansible.module_utils.basic import AnsibleModule # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec # NOQA
-from ansible.module_utils._text import to_text # NOQA
+from ansible.module_utils.basic import AnsibleModule  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec  # NOQA
+from ansible.module_utils._text import to_text  # NOQA
 
 
 def traffic_class(module):
@@ -192,7 +195,7 @@ def traffic_class(module):
         data = {
             'class_name': params['class_name'],
             'class_type': params['class_type']
-           }
+        }
         method = 'POST'
 
     elif params['state'] == 'delete':
@@ -223,8 +226,8 @@ def traffic_class(module):
                         if qos_action['traffic_class_id'] == class_id:
                             for port in port_config['qos_port_policy_element']:
                                 if qos['id'] == port['policy_id']:
-                                    return {'msg': 'Class {} is active in qos '
-                                            'policy {} for port {}.Remove qos '
+                                    return {'msg': 'Class {1} is active in qos '
+                                            'policy {2} for port {3}.Remove qos '
                                             'policy first'
                                             .format(class_id, qos['id'],
                                                     port['port_id']),
@@ -232,8 +235,8 @@ def traffic_class(module):
 
                             for vlan in vlan_config['qos_vlan_policy_element']:
                                 if qos['id'] == vlan['policy_id']:
-                                    return {'msg': 'Class {} is active in qos '
-                                            'policy {} for vlan {}.Remove qos '
+                                    return {'msg': 'Class {1} is active in qos '
+                                            'policy {2} for vlan {3}.Remove qos '
                                             'policy first'
                                             .format(class_id, qos['id'],
                                                     vlan['vlan_id']),
@@ -279,9 +282,9 @@ def traffic_class_match(module):
             return {'msg': 'protocol_type is required', 'changed': False}
 
         data = {
-                'traffic_class_id': class_id,
-                'entry_type': params['entry_type'],
-                }
+            'traffic_class_id': class_id,
+            'entry_type': params['entry_type'],
+        }
 
         if params['dscp_value']:
             data['dscp_value'] = params['dscp_value']
@@ -292,21 +295,21 @@ def traffic_class_match(module):
                 "source_ip_address": {
                     "version": version,
                     "octets": params['source_ip_address']
-                    },
+                },
                 "source_ip_mask": {
                     "version": version,
                     "octets": params['source_ip_mask']
-                    },
+                },
                 "destination_ip_address": {
                     "version": version,
                     "octets": params['destination_ip_address']
-                    },
+                },
                 "destination_ip_mask": {
                     "version": version,
                     "octets": params['destination_ip_mask']
-                    }
                 }
-            })
+            }
+        })
 
         if protocol == 'PT_ICMP':
             if params['icmp_type'] > -1:
@@ -338,9 +341,7 @@ def traffic_class_match(module):
 
         qos_config = get_config(module, match_url)
         if qos_config:
-            print("HERE")
             check_config = module.from_json(to_text(qos_config))
-            print("CHECK", check_config)
             for config in check_config['qos_class_match_element']:
                 if config['traffic_match']['protocol_type'] == 'PT_TCP':
                     config['traffic_match'].pop('is_connection_established')
@@ -373,7 +374,7 @@ def run_module():
         class_type=dict(type='str', required=False, default='QCT_IP_V4',
                         choices=['QCT_IP_V4', 'QCT_IP_V6']),
         dscp_value=dict(type='int', reqquired=False,
-                        choices=[i for i in range(0, 64)]),
+                        choices=[list(range(0, 64))]),
         state=dict(type='str', required=False, default='create',
                    choices=['create', 'delete']),
         sequence_no=dict(type='int', required=False, default=-1),

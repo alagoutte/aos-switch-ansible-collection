@@ -15,6 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'status': ['preview'],
@@ -183,13 +186,13 @@ EXAMPLES = '''
           is_igmp_enabled: false
 '''
 
-from ansible.module_utils.basic import AnsibleModule # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import get_config # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import get_firmware # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec # NOQA
-from ansible.module_utils._text import to_text # NOQA
-import json # NOQA
+from ansible.module_utils.basic import AnsibleModule  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import get_config  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import get_firmware  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec  # NOQA
+from ansible.module_utils._text import to_text  # NOQA
+import json  # NOQA
 
 
 """
@@ -257,7 +260,7 @@ def config_vlan_ipaddress(module):
                     ip_data = newdata['ip_address_subnet_element'][0]
                     if ip_data['ip_address_mode'] != params['ip_address_mode']:
                         pass
-                    elif ip_data['ip_address']['octets'] == params['vlan_ip_address']: # NOQA
+                    elif ip_data['ip_address']['octets'] == params['vlan_ip_address']:  # NOQA
                         return {'msg': 'The ip address is already '
                                 'present on switch',
                                 'changed': False, 'failed': False}
@@ -277,7 +280,7 @@ def config_vlan_ipaddress(module):
             if "is_dhcp_server_enabled" in check_dhcp_enabled.keys():
                 if check_dhcp_enabled["is_dhcp_server_enabled"]:
                     return {'msg': 'DHCP server must be disabled on this '
-                                   'VLAN {}'.format(params['vlan_id']),
+                                   'VLAN {1}'.format(params['vlan_id']),
                             'changed': False, 'failed': True}
             method = 'DELETE'
             result = run_commands(module, url, data, method)
@@ -431,7 +434,7 @@ def config_vlan(module):
         data = {'vlan_id': params['vlan_id']}
 
     if params['name'] == "":
-        data['name'] = "VLAN{}".format(params['vlan_id'])
+        data['name'] = "VLAN{1}".format(params['vlan_id'])
     else:
         data['name'] = params['name']
 
@@ -483,7 +486,7 @@ def config_qos(module):
     # check qos policy is present
     qos_check = '/qos/policies/' + params['qos_policy'] + '~' + 'QPT_QOS'
     if not get_config(module, qos_check):
-        return {'msg': 'Configure QoS policy first. {} does not exist'
+        return {'msg': 'Configure QoS policy first. {1} does not exist'
                 .format(params['qos_policy']), 'changed': False}
 
     if params['config'] == 'create':
@@ -499,14 +502,14 @@ def config_qos(module):
                     return ret
 
         data = {
-                'vlan_id': params['vlan_id'],
-                'policy_id': policy_id
-                }
+            'vlan_id': params['vlan_id'],
+            'policy_id': policy_id
+        }
         result = run_commands(module, url, data, 'POST')
 
     else:
         url = url + '/' + str(params['vlan_id']) + '-' + \
-              params['qos_policy'] + '~' + 'QPT_QOS'
+            params['qos_policy'] + '~' + 'QPT_QOS'
         check_url = url + '/stats'
 
         result = run_commands(module, url, {}, 'DELETE', check=check_url)
@@ -531,12 +534,12 @@ def config_acl(module):
 
     check_acl = '/acls/' + params['acl_id'] + "~" + acl_type
     if not get_config(module, check_acl):
-        return {'msg': 'Configure ACL first. {} does not exist'
+        return {'msg': 'Configure ACL first. {1} does not exist'
                 .format(params['acl_id']), 'changed': False}
 
-    delete_url = "{}/{}-{}~{}-{}".format(url, params['vlan_id'],
-                                         params['acl_id'], acl_type,
-                                         direction)
+    delete_url = "{1}/{2}-{3}~{4}-{5}".format(url, params['vlan_id'],
+                                              params['acl_id'], acl_type,
+                                              direction)
 
     config_present = False
     current_acl = get_config(module, url)
@@ -593,8 +596,8 @@ def config_igmp(module):
     data['robustness'] = params['robustness']
     data['version'] = params['igmp_version']
     data['querier'] = {
-            'is_querier_enabled': params['is_querier_enabled'],
-            'interval': params['interval']
+        'is_querier_enabled': params['is_querier_enabled'],
+        'interval': params['interval']
     }
 
     method = 'PUT'

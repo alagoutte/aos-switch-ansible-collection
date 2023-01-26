@@ -15,6 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'status': ['preview'],
@@ -157,7 +160,7 @@ options:
 
 author:
     - Ashish Pant (@hpe)
-'''  # NOQA
+'''   # NOQA
 
 EXAMPLES = '''
 - name: Create ip access-list extended permit_all with rule permit ip any any
@@ -260,7 +263,7 @@ EXAMPLES = '''
   with_items:
     - test2
     - test3
-'''  # NOQA
+'''   # NOQA
 
 RETURN = '''
 original_message:
@@ -270,10 +273,10 @@ message:
     description: The output message that the sample module generates
 '''
 
-from ansible.module_utils.basic import AnsibleModule # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands,get_config # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec # NOQA
-from ansible.module_utils._text import to_text # NOQA
+from ansible.module_utils.basic import AnsibleModule  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec  # NOQA
+from ansible.module_utils._text import to_text  # NOQA
 
 
 def acl(module):
@@ -288,9 +291,9 @@ def acl(module):
     if params['state'] == 'create':
 
         data = {
-                'acl_name': params['acl_name'],
-                'acl_type': params['acl_type'],
-                }
+            'acl_name': params['acl_name'],
+            'acl_type': params['acl_type'],
+        }
 
         check_list = \
             set(['AT_EXTENDED_IPV4', 'AT_STANDARD_IPV4',
@@ -299,7 +302,7 @@ def acl(module):
             temp_url = url + '/' + params['acl_name'] + '~' + temp
             check_acl = get_config(module, temp_url)
             if check_acl:
-                result = {'msg': '{} already exists for ''type {}.'
+                result = {'msg': '{1} already exists for ''type {2}.'
                           .format(params['acl_name'], temp),
                           'changed': False}
                 module.exit_json(**result)
@@ -314,7 +317,7 @@ def acl(module):
 
             for ele in check_config['acl_port_policy_element']:
                 if ele['acl_id'] == acl_id:
-                    return {'msg': 'ACL {} applied to port {}'
+                    return {'msg': 'ACL {1} applied to port {2}'
                             .format(params['acl_name'], ele['port_id']),
                             'changed': False}
 
@@ -326,8 +329,8 @@ def acl(module):
 
             for ele in check_config['acl_vlan_policy_element']:
                 if ele['acl_id'] == acl_id:
-                    result = {'msg': 'ACL {} applied to vlan '
-                              '{}'.format(params['acl_name'], ele['vlan_id']),
+                    result = {'msg': 'ACL {1} applied to vlan '
+                              '{2}'.format(params['acl_name'], ele['vlan_id']),
                               'changed': False}
                     module.exit_json(**result)
 
@@ -357,7 +360,6 @@ def check_acl_rule_exists(module):
             if ele['acl_action'] != params['acl_action']:
                 continue
             if params['acl_type'] == 'AT_EXTENDED_IPV4':
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 protocol_type = ele['traffic_match']['protocol_type']
                 source_ip_address = \
                     ele['traffic_match']['source_ip_address']['octets']
@@ -439,7 +441,7 @@ def check_acl_rule_exists(module):
                     source_ip_mask = params['acl_source_mask']
 
                 if source_ip_address != \
-                        ele['std_source_address']['source_ip_address']['octets']: # NOQA
+                        ele['std_source_address']['source_ip_address']['octets']:  # NOQA
                     continue
                 if source_ip_mask != \
                         ele['std_source_address']['source_ip_mask']['octets']:
@@ -468,7 +470,7 @@ def acl_rule(module):
         data.update({
             'acl_id': acl_id,
             'acl_action': params['acl_action'],
-            })
+        })
 
         if params['remark']:
             data['remark'] = params['remark']
@@ -481,7 +483,7 @@ def acl_rule(module):
                         'destination_ip_address',
                         'destination_ip_mask']:
                 if params.get(key) is None:
-                    return {'msg': '{} is required for extended '
+                    return {'msg': '{1} is required for extended '
                             'acl policy'.format(key),
                             'changed': False}
 
@@ -497,21 +499,21 @@ def acl_rule(module):
                     "source_ip_address": {
                         "version": version,
                         "octets": params['source_ip_address']
-                        },
+                    },
                     "source_ip_mask": {
                         "version": version,
                         "octets": params['source_ip_mask']
-                        },
+                    },
                     "destination_ip_address": {
                         "version": version,
                         "octets": params['destination_ip_address']
-                        },
+                    },
                     "destination_ip_mask": {
                         "version": version,
                         "octets": params['destination_ip_mask']
-                        }
                     }
-                })
+                }
+            })
 
             if protocol == 'PT_ICMP':
                 if params['icmp_type'] > -1:
@@ -563,13 +565,13 @@ def acl_rule(module):
                     'source_ip_address': {
                         'version': 'IAV_IP_V4',
                         'octets': source_ip,
-                        },
+                    },
                     'source_ip_mask': {
                         'version': 'IAV_IP_V4',
                         'octets': source_mask,
-                        }
                     }
-                })
+                }
+            })
 
         # Check idempotency for duplicate ip values
         if check_acl_rule_exists(module) is True:

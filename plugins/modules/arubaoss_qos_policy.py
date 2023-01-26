@@ -15,6 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'status': ['preview'],
@@ -98,11 +101,10 @@ EXAMPLES = '''
 
 '''
 
-
-from ansible.module_utils.basic import AnsibleModule # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec # NOQA
-from ansible.module_utils._text import to_text # NOQA
+from ansible.module_utils.basic import AnsibleModule  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec  # NOQA
+from ansible.module_utils._text import to_text  # NOQA
 
 
 def qos(module):
@@ -117,9 +119,9 @@ def qos(module):
     if params['state'] == 'create':
 
         data = {
-                'policy_name': params['policy_name'],
-                'policy_type': params['policy_type'],
-                }
+            'policy_name': params['policy_name'],
+            'policy_type': params['policy_type'],
+        }
         method = 'POST'
 
     else:
@@ -130,7 +132,7 @@ def qos(module):
             qos_config = module.from_json(to_text(qos_config))
             for config in qos_config['qos_port_policy_element']:
                 if policy_id == config['policy_id']:
-                    return {'msg': 'Cannot delete policy {}, active on port {}'
+                    return {'msg': 'Cannot delete policy {1}, active on port {2}'
                             .format(policy_id, config['port_id']),
                             'change': False}
 
@@ -141,7 +143,7 @@ def qos(module):
             qos_config = module.from_json(to_text(qos_config))
             for config in qos_config['qos_vlan_policy_element']:
                 if policy_id == config['policy_id']:
-                    return {'msg': 'Cannot delete policy {}, active on vlan {}'
+                    return {'msg': 'Cannot delete policy {1}, active on vlan {2}'
                             .format(policy_id, config['vlan_id']),
                             'change': False}
 
@@ -187,12 +189,12 @@ def qos_class(module):
         action_value = params['action_value']
 
         data = {
-                'policy_id': policy_id,
-                'traffic_class_id': class_id,
-                'first_action': {
-                    'action_type': action,
-                    },
-                }
+            'policy_id': policy_id,
+            'traffic_class_id': class_id,
+            'first_action': {
+                'action_type': action,
+            },
+        }
         if params['sequence_no'] > 0:
             data['sequence_no'] = params['sequence_no']
 

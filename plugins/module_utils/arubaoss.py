@@ -27,7 +27,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 #
-
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
 
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import env_fallback
@@ -35,7 +36,7 @@ try:
     from ansible.module_utils.network.common.utils import to_list
 except ImportError:
     from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import to_list
-from ansible.module_utils.connection import exec_command, Connection, ConnectionError # NOQA
+from ansible.module_utils.connection import exec_command, Connection, ConnectionError  # NOQA
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.urls import fetch_url
 from time import sleep
@@ -65,12 +66,12 @@ arubaoss_argument_spec = {
 }
 
 arubaoss_top_spec = {
-    'host': dict(removed_in_version=2.9),
-    'port': dict(removed_in_version=2.9, type='int'),
-    'username': dict(removed_in_version=2.9),
-    'password': dict(removed_in_version=2.9, no_log=True),
-    'ssh_keyfile': dict(removed_in_version=2.9, type='path'),
-    'timeout': dict(removed_in_version=2.9, type='int'),
+    'host': dict(removed_in_version="2.9.0"),
+    'port': dict(removed_in_version="2.9.0", type='int'),
+    'username': dict(removed_in_version="2.9.0"),
+    'password': dict(removed_in_version="2.9.0", no_log=True),
+    'ssh_keyfile': dict(removed_in_version="2.9.0", type='path'),
+    'timeout': dict(removed_in_version="2.9.0", type='int'),
     'use_ssl': dict(type='bool'),
     'validate_certs': dict(type='bool', default=False),
     'api_version': dict(type='str', default='None'),
@@ -113,12 +114,15 @@ class Checkversion:
         # needs to be updated here.
         api = 'v6.0'
 
-        self._url = "{}://{}:{}/rest/{}".format(proto, host, port, api)
+        self._url = "{1}://{2}:{3}/rest/{4}".format(proto, host, port, api)
 
-    def _send(self, url, method='POST', body={}):
+    def _send(self, url, method='POST', body=None):
         '''Sends command to device '''
 
         headers = {'Content-Type': 'application/json'}
+
+        if body is None:
+            body = {}
 
         if self._cookie:
             headers['Cookie'] = self._cookie
@@ -189,7 +193,7 @@ class Checkversion:
         if headers['status'] == 200:
             body = response.read()
             body = json.loads(body)
-            api = body['version_element'][len(body['version_element'])-1]['version'] # NOQA
+            api = body['version_element'][len(body['version_element']) - 1]['version']  # NOQA
             self._module.params['api_version'] = api
         else:
             self._module.fail_json(**headers)
@@ -248,12 +252,15 @@ class Aossapi:
 
         api = self._module.params['api_version']
 
-        self._url = "{}://{}:{}/rest/{}".format(proto, host, port, api)
+        self._url = "{1}://{2}:{3}/rest/{4}".format(proto, host, port, api)
 
-    def _send(self, url, method='POST', body={}):
+    def _send(self, url, method='POST', body=None):
         '''Sends command to device '''
 
         headers = {'Content-Type': 'application/json'}
+
+        if body is None:
+            body = {}
 
         if self._cookie:
             headers['Cookie'] = self._cookie
@@ -290,7 +297,7 @@ class Aossapi:
         if headers['status'] != 204:
             self._module.fail_json(**headers)
 
-    def run_commands(self, uri, payload={}, method="POST",
+    def run_commands(self, uri, payload=None, method="POST",
                      check=None, wait_after_send=0):
 
         '''
@@ -300,6 +307,8 @@ class Aossapi:
         '''
         reboot = None
         response = None
+        if payload is None:
+            payload = {}
         if method == 'reboot':
             reboot = True
             method = 'POST'
@@ -330,7 +339,7 @@ class Aossapi:
             try:
                 if response:
                     data = response.read()
-                    response = self._module.from_json(to_text(data, errors='surrogate_then_replace')) # NOQA
+                    response = self._module.from_json(to_text(data, errors='surrogate_then_replace'))  # NOQA
                     response['header'] = headers
                     response['changed'] = True
                 else:
@@ -345,7 +354,7 @@ class Aossapi:
 
             return response
         except Exception as err:
-            self._module.fail_json(msg='Failed : {}'.format(err), failed=True)
+            self._module.fail_json(msg='Failed : {1}'.format(err), failed=True)
 
     def get_config(self, uri, check_login=True):
         ''' Execute a GET operation of device for uri'''

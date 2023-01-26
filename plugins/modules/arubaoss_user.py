@@ -15,6 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'status': ['preview'],
@@ -91,10 +94,10 @@ EXAMPLES = '''
 
 '''
 
-from ansible.module_utils.basic import AnsibleModule # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config # NOQA
-from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec # NOQA
-from ansible.module_utils._text import to_text # NOQA
+from ansible.module_utils.basic import AnsibleModule  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import run_commands, get_config  # NOQA
+from ansible_collections.arubanetworks.aos_switch.plugins.module_utils.arubaoss import arubaoss_argument_spec  # NOQA
+from ansible.module_utils._text import to_text  # NOQA
 
 
 def config_user(module):
@@ -105,15 +108,15 @@ def config_user(module):
     if params['state'] == 'create':
         for key in ['user_password', 'password_type', 'user_name']:
             if key not in params:
-                return {'msg': '{} is mandatory to create user'.format(key),
+                return {'msg': '{1} is mandatory to create user'.format(key),
                         'changed': False, 'failed': True}
 
     data = {
-            'type': params['user_type'],
-            'name': params['user_name'],
-            'password': params['user_password'],
-            'password_type': params['password_type']
-            }
+        'type': params['user_type'],
+        'name': params['user_name'],
+        'password': params['user_password'],
+        'password_type': params['password_type']
+    }
 
     method = 'POST'
     delete_url = url + '/' + params['user_type']
