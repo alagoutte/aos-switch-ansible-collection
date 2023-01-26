@@ -11,7 +11,7 @@ on:
     - cron: '0 6 * * *'
 env:
   NAMESPACE: arubanetworks
-  COLLECTION_NAME: aos-switch
+  COLLECTION_NAME: aos_switch
 
 jobs:
 
