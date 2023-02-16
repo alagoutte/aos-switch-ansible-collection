@@ -9,7 +9,7 @@
 DOCUMENTATION = """
 ---
 author: Aruba Networks (@ArubaNetworks)
-network_cli: arubaoss
+name: arubaoss
 short_description: Use CLI to run commands to Switch devices
 description:
   - This AOS-Switch plugin provides CLI operations with ArubaOS-Switch Devices
